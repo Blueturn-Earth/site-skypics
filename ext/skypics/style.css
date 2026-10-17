@@ -1,0 +1,1036 @@
+/* Sky Photos extension styles (ext/skypics) */
+
+.save-btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  border-radius: 20px;
+  border: none;
+  background: #1e88e5;
+  color: white;
+  cursor: pointer;
+}
+
+.save-btn:active {
+  transform: scale(0.97);
+}
+
+.save-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.hidden {
+  display: none;
+}
+
+#skyPhotosEarthGallery {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 15;
+  overflow: hidden;
+  /* Only thumbs take the pointer; empty space falls through to the globe. */
+  pointer-events: none;
+}
+
+/* Poles holding the pictures without a frustum, under the thumbs. */
+.sky-earth-poles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.sky-earth-poles polyline {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sky-earth-photo-thumb {
+  position: absolute;
+  display: flex;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+  border-radius: 8px;
+  z-index: 5;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: none;
+}
+
+:root {
+  --sky-scroll-cross-size: calc(3 * var(--menu-icon-size));
+  --sky-scroll-inset-top: 8px;
+  --sky-scroll-select-border: 4px;
+  --sky-scroll-gap: calc(5px / var(--dppx, 1));
+  --bottom-scroller-clearance: 16px;
+}
+
+#skyPhotosScrollGallery {
+  padding: var(--sky-scroll-select-border);
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  cursor: grab;
+  position: fixed;
+  z-index: 20;
+}
+
+/* Portrait: under the menu row, full width */
+#skyPhotosScrollGallery.horizontal {
+  top: auto;
+  bottom: var(--bottom-scroller-clearance);
+  left: 0;
+  right: 0;
+  height: var(--sky-scroll-cross-size);
+  overflow-x: auto;
+  overflow-y: hidden;
+  touch-action: pan-x;
+}
+
+/* Landscape: beside the menu column, full height (no filter row, unlike in the Weather extension). */
+#skyPhotosScrollGallery.vertical {
+  width: var(--sky-scroll-cross-size);
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  touch-action: pan-y;
+}
+
+#skyPhotosScrollGallery.vertical.scroll-menu-right {
+  right: var(--menu-corner-size, 56px);
+  left: auto;
+}
+
+#skyPhotosScrollGallery.vertical.scroll-menu-left {
+  left: var(--menu-corner-size, 56px);
+  right: auto;
+}
+
+/* Split view: the strip follows the Earth half's orientation (drag_scroller.js),
+   so it may lie across a side-by-side split, or along a stacked one: kept
+   within the Earth half. */
+body.bt-split-row:not(.bt-split-flip) #skyPhotosScrollGallery.horizontal {
+  right: calc(var(--bt-split, 0) * 100%);
+}
+
+body.bt-split-row.bt-split-flip #skyPhotosScrollGallery.horizontal {
+  left: calc(var(--bt-split, 0) * 100%);
+}
+
+body.bt-split-col #skyPhotosScrollGallery.vertical {
+  bottom: calc(var(--bt-split, 0) * 100%);
+}
+
+#skyPhotosScrollGallery::-webkit-scrollbar {
+  display: none;
+}
+
+#skyPhotosScrollGallery.dragging {
+  cursor: grabbing;
+}
+
+#skyPhotosScrollBox {
+  display: flex;
+  gap: var(--sky-scroll-gap);
+}
+
+.scroll-spacer {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.sky-scroll-photo-thumb {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.sky-scroll-photo-thumb img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  box-sizing: border-box;
+  border: var(--sky-scroll-select-border) solid transparent;
+  display: block;
+  scroll-snap-align: center;
+  -webkit-user-drag: none;
+  user-drag: none;
+  user-select: none;
+}
+
+/* Border: gray and thin; the selected photo white and wide (epic_status.js),
+   whatever its EPIC / EUMETSAT coverage. */
+.sky-scroll-photo-thumb img {
+  border-width: calc(var(--sky-scroll-select-border) / 2);
+  border-color: rgba(150, 150, 150, 0.85);
+}
+
+.sky-scroll-photo-thumb.is-selected img {
+  border-width: var(--sky-scroll-select-border);
+  border-color: rgba(255, 255, 255, 1);
+}
+
+#skyPhotosScrollGallery.horizontal #skyPhotosScrollBox {
+  flex-direction: row;
+  height: 100%;
+  align-items: stretch;
+}
+
+#skyPhotosScrollGallery.horizontal .sky-scroll-photo-thumb {
+  height: 100%;
+  width: auto;
+}
+
+#skyPhotosScrollGallery.vertical #skyPhotosScrollBox {
+  flex-direction: column;
+  width: 100%;
+}
+
+#skyPhotosScrollGallery.vertical .sky-scroll-photo-thumb {
+  width: 100%;
+  height: auto;
+}
+
+.sky-photos-camera-btn {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+  background: rgba(30, 136, 229, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  transition: opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+}
+
+/* Out of the timeline chrome (ui.js): same idle fade as the rest of the chrome. */
+.sky-photos-camera-btn.chrome-autohide {
+  transition: opacity 0.65s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.sky-photos-camera-btn:hover,
+.sky-photos-camera-btn:focus-visible {
+  background: rgba(30, 136, 229, 1);
+  border-color: rgba(255, 255, 255, 0.42);
+}
+
+.sky-photos-camera-btn img {
+  width: 22px;
+  height: 22px;
+  display: block;
+  pointer-events: none;
+}
+
+#menuSkyPhotosDriveFolder {
+  padding-left: 34px;
+  padding-right: 34px;
+  font-size: 14px;
+}
+
+#menuSkyPhotosDriveFolder .menu-item-icon {
+  opacity: 0.85;
+}
+
+/* Selected photo in the split view (popup.js): layers cross-fade on switch. */
+.sky-split-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.sky-split-layer {
+  opacity: 0;
+  transition: opacity 350ms ease;
+}
+
+/* Carousel (swipe / neighbor switch): photos slide side by side, no fade. */
+.sky-split-layer.is-sliding {
+  transition: none;
+}
+
+/* Preloaded previous / next photo, parked outside the pane (clipped). */
+.sky-split-neighbor {
+  pointer-events: none;
+}
+
+.sky-split-layer.is-shown {
+  opacity: 1;
+}
+
+.sky-live-camera {
+  background: #000;
+  overflow: hidden;
+}
+
+.sky-live-camera video,
+.sky-live-camera-still {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Shutter cue (live_camera.js): frozen frame over the feed, flash, spinner. */
+.sky-live-camera-still {
+  position: absolute;
+  inset: 0;
+}
+
+.sky-live-camera-flash {
+  position: absolute;
+  inset: 0;
+  background: white;
+  pointer-events: none;
+  animation: sky-shot-flash 0.35s ease-out forwards;
+}
+
+@keyframes sky-shot-flash {
+  from { opacity: 0.85; }
+  to { opacity: 0; }
+}
+
+.sky-live-camera-busy {
+  position: absolute;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  font-size: 15px;
+  pointer-events: none;
+}
+
+.sky-live-camera-busy::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: sky-shot-spin 0.8s linear infinite;
+}
+
+@keyframes sky-shot-spin {
+  to { transform: rotate(360deg); }
+}
+
+.sky-live-camera-busy:empty {
+  display: none;
+}
+
+/* Full-resolution still did not match the frozen frame (live_camera.js). */
+.sky-live-camera-moved {
+  position: absolute;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 15px;
+}
+
+.sky-live-camera-moved p {
+  flex-basis: 100%;
+  margin: 0;
+  text-align: center;
+}
+
+.sky-live-camera-moved button {
+  padding: 8px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 18px;
+  background: transparent;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.sky-live-camera-moved button.primary {
+  background: white;
+  color: black;
+}
+
+.sky-live-camera-shoot {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  padding: 0;
+}
+
+.sky-live-camera-shoot:active {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.sky-live-camera-shoot:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Camera frustum on the globe (frustum.js); CSS px space of #epicEarth. */
+.sky-frustum {
+  position: absolute;
+  inset: 0;
+  z-index: 16;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Shared WebGL canvas of all frustums (depth-tested), under their SVG edges. */
+.sky-frustum-gl {
+  position: absolute;
+  inset: 0;
+  z-index: 16;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sky-frustum-gl canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sky-frustum-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Clickable frustum silhouette (replay): a globe pick under the drawn frustum. */
+.sky-frustum-lines path.sky-frustum-hit {
+  fill: transparent;
+  stroke: none;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: none;
+}
+
+/* Live camera (realtime lock): photo thumbs would jump time. */
+body.bt-time-locked #skyPhotosScrollGallery,
+body.bt-time-locked #skyPhotosScrollGallery *,
+body.bt-time-locked #skyPhotosEarthGallery * {
+  pointer-events: none !important;
+}
+
+/*
+ * Live camera pane above #topUI (z 20): chrome over its half (timeline,
+ * even when idle-forced hittable) must not eat the shoot button.
+ */
+#btSplitPane[data-owner="skypics-camera"] {
+  z-index: 21;
+}
+
+/*
+ * …but the menu corner (menu, extension buttons, True Color) stays above the
+ * pane on its side: #appMenu lives in #topUI, so the whole layer goes up.
+ * Safe for the shoot button: everything else in #topUI that could cover it
+ * (timeline, play / speed, date picker, strip) is hidden and click-through
+ * while shooting (below), and the time label is lifted out to the body.
+ */
+body.sky-live-camera-open #topUI {
+  z-index: 22;
+}
+
+/* Gallery / Drive folder: secondary to the camera button. */
+.sky-photos-camera-btn.sky-photos-corner-btn {
+  background: rgba(20, 28, 40, 0.75);
+}
+
+.sky-photos-camera-btn.sky-photos-corner-btn:hover,
+.sky-photos-camera-btn.sky-photos-corner-btn:focus-visible {
+  background: rgba(40, 56, 80, 0.95);
+}
+
+/* Portrait: camera centered in the controls row (Latest's old slot). The
+   base rule's `all: unset` drops .timeline-chrome-latest's positioning, so
+   it is set here. */
+.sky-photos-camera-btn.timeline-chrome-latest {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+/* The play button is at the middle (timeline.css): the camera moves to its side away from the date (the date is on
+   the menu side), toward the speed. */
+.epic-timeline--side-left .sky-photos-camera-btn.timeline-chrome-latest {
+  left: calc(50% - 57px);
+}
+
+.epic-timeline--side-right .sky-photos-camera-btn.timeline-chrome-latest {
+  left: calc(50% + 57px);
+}
+
+/* Portrait preview (ui.js): on the screen's bottom line, the same base as
+   (i) (photo_info.js MARGIN), centered. */
+.sky-photos-camera-btn.sky-photos-camera-preview-bottom {
+  position: fixed;
+  left: 50%;
+  top: auto;
+  bottom: 10px;
+  transform: translateX(-50%);
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  z-index: 22;
+  pointer-events: auto;
+}
+
+/* Camera: photo icon sized to its button. */
+#skyPhotosCameraBtn img {
+  width: 33px;
+  height: 33px;
+}
+
+/* Landscape: camera on the menu side, mid-height, right beside the menu
+   column (--menu-corner-size, screen px: undo the zoom); above the split
+   pane and photo strip. */
+.sky-photos-camera-btn.sky-photos-camera-device-edge {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  right: calc(var(--menu-corner-size, 56px) / var(--bt-ui-scale, 1) - 10px);
+  left: auto;
+  width: 66px;
+  height: 66px;
+  border-radius: 12px;
+  z-index: 22;
+  zoom: var(--bt-ui-scale, 1);
+}
+
+.sky-photos-camera-btn.sky-photos-camera-device-edge.sky-photos-camera-menu-left {
+  right: auto;
+  left: calc(var(--menu-corner-size, 56px) / var(--bt-ui-scale, 1) + 22px);
+}
+
+/* Live view in landscape: shutter on the device's bottom edge too. */
+body.bt-split-row .sky-live-camera-shoot {
+  left: auto;
+  right: 24px;
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
+}
+
+body.bt-split-row.bt-split-flip .sky-live-camera-shoot {
+  right: auto;
+  left: 24px;
+}
+
+/* Photo strip toggle: lit while the strip is on. */
+.sky-photos-camera-btn.sky-photos-corner-btn.is-on {
+  background: rgba(30, 136, 229, 0.55);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+/* Photo info (photo_info.js): bottom-left of the split preview. */
+/* Body-level overlay (photo_info.js): above all chrome; positions set in layout(). */
+.sky-photo-info-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 22;
+  pointer-events: none;
+}
+
+.sky-photo-info-layer[hidden] {
+  display: none;
+}
+
+.sky-photo-info-layer .sky-ai-toggle {
+  position: fixed;
+  bottom: auto;
+  pointer-events: auto;
+}
+
+.sky-photo-info {
+  position: fixed;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font: 13px/1.45 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  pointer-events: auto;
+  z-index: 3;
+}
+
+.sky-photo-info .is-dim {
+  opacity: 0.7;
+  font-size: 0.92em;
+}
+
+.sky-photo-info-toggle {
+  position: fixed;
+  pointer-events: auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font: italic 600 16px/1 Georgia, 'Times New Roman', serif;
+  cursor: pointer;
+  z-index: 3;
+  padding: 0;
+}
+
+/* Delete (photo_info.js): bottom-right corner of the preview pane. */
+.sky-photo-delete {
+  position: fixed;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  cursor: pointer;
+  z-index: 3;
+  padding: 0;
+}
+
+.sky-photo-delete[hidden] {
+  display: none;
+}
+
+.sky-photo-delete:hover,
+.sky-photo-delete:focus-visible {
+  background: rgba(211, 47, 47, 0.8);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.sky-photo-info-toggle.is-on {
+  background: rgba(30, 136, 229, 0.75);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+/* Portrait strip: half height; landscape strip: half width. */
+#skyPhotosScrollGallery.horizontal {
+  height: calc(var(--sky-scroll-cross-size) / 2);
+}
+
+#skyPhotosScrollGallery.vertical {
+  width: calc(var(--sky-scroll-cross-size) / 2);
+}
+
+/* Photo preview: strip on the preview half's edge along the split line (slides
+   with the pane, same formula as #btSplitPane), lying along it (scroller.js).
+   Portrait: at its top, the info between it and the timeline. */
+body.skypics-preview.bt-split-col #skyPhotosScrollGallery.horizontal {
+  top: calc((1 - var(--bt-split, 0)) * 100%);
+  bottom: auto;
+  left: 0;
+  right: 0;
+}
+
+body.skypics-preview.bt-split-row:not(.bt-split-flip) #skyPhotosScrollGallery.vertical {
+  left: calc((1 - var(--bt-split, 0)) * 100%);
+  right: auto;
+  top: 0;
+  bottom: 0;
+}
+
+body.skypics-preview.bt-split-row.bt-split-flip #skyPhotosScrollGallery.vertical {
+  right: calc((1 - var(--bt-split, 0)) * 100%);
+  left: auto;
+  top: 0;
+  bottom: 0;
+}
+
+/* Fresh shot in the preview: Publish over the photo pane, top centre. */
+.sky-publish-panel {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.sky-publish-btn {
+  font-size: 16px;
+  padding: 10px 22px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Publishing: a spinning arrow in place of the label, not dimmed. */
+.sky-publish-btn.is-publishing:disabled {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  opacity: 1;
+  cursor: progress;
+}
+
+.sky-publish-btn.is-publishing svg {
+  animation: sky-shot-spin 0.9s linear infinite;
+}
+
+/* After publishing: same place and size as the Publish button. */
+.sky-publish-thanks {
+  font-size: 16px;
+  padding: 10px 22px;
+  border-radius: 8px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.sky-publish-panel.is-fading {
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.sky-publish-status {
+  font-size: 13px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 3px 10px;
+  border-radius: 10px;
+  white-space: pre-line;
+  text-align: left;
+}
+
+/* Publishing is public: said next to the button (camera.js). */
+.sky-publish-public {
+  font-size: 12px;
+  color: #e6edf5;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 3px 10px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.sky-publish-public a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* Shot at preview resolution (camera.js). */
+.sky-publish-note {
+  font-size: 13px;
+  color: #ffd27a;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 3px 10px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.sky-publish-status:empty {
+  display: none;
+}
+
+.sky-publish-status[data-ok="true"] {
+  color: lightgreen;
+}
+
+.sky-publish-status[data-ok="false"] {
+  color: pink;
+}
+
+/* Asked to publish (camera.js): no photo strip, no timeline. */
+body.skypics-publishing #skyPhotosScrollGallery,
+body.skypics-publishing #epicTimeline {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Live camera: no photo filter. A preview keeps it: opening a photo turns
+   the Filter button off (ui.js); turning it back on shows the chips. */
+body.sky-live-camera-open #skyPhotosFilterBtn,
+body.sky-live-camera-open #skyPhotosMineBtn,
+body.sky-live-camera-open #skyPhotosFilter {
+  display: none !important;
+}
+
+/* Photo preview: time is the photo's, no play / speed (layout kept). */
+body.sky-preview-open .timeline-chrome-speed-wrap,
+body.sky-preview-open .timeline-chrome-play-row {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Live shooting: only the live frustum on the globe, no other photos. */
+body.sky-live-camera-open #skyPhotosEarthGallery,
+body.sky-live-camera-open .sky-frustum:not(.sky-frustum--live) {
+  display: none !important;
+}
+
+/* Live shooting: no time navigation at all (not even the greyed realtime
+   lock): timeline, play / speed, date picker, photo strip. Layout kept. */
+body.sky-live-camera-open #epicTimeline,
+body.sky-live-camera-open #epicTimeline *,
+body.sky-live-camera-open #date-picker,
+body.sky-live-camera-open #speedDragToast,
+body.sky-live-camera-open #skyPhotosScrollGallery {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Date / time label lifted to the body (ui.js: live shooting, landscape
+   preview): not greyed, not a link, at the bottom corner of the Earth half. */
+body > #current-time-text.sky-time-lifted {
+  position: fixed;
+  z-index: 21;
+  left: 8px;
+  right: 8px;
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  width: auto;
+  pointer-events: none !important;
+  /* Two lines (date, then time), on the menu side (ui.js), as in the timeline. */
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  text-align: right !important;
+  row-gap: 0.1em;
+  overflow: visible;
+}
+
+body > #current-time-text.sky-time-lifted.sky-time-menu-left {
+  align-items: flex-start !important;
+  text-align: left !important;
+}
+
+body > #current-time-text.sky-time-lifted .now-images-date {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: inherit !important;
+  max-width: none !important;
+}
+
+body > #current-time-text.sky-time-lifted :is(.time-bar-status, .time-bar-day, .time-bar-tod, .now-images-day, .now-images-tod) {
+  display: block !important;
+}
+
+body.bt-split-col > #current-time-text.sky-time-lifted {
+  bottom: calc(var(--bt-split, 0) * 100% + 8px);
+}
+
+body.bt-split-row > #current-time-text.sky-time-lifted {
+  right: calc(var(--bt-split, 0) * 100% + 8px);
+}
+
+body.bt-split-row.bt-split-flip > #current-time-text.sky-time-lifted {
+  left: calc(var(--bt-split, 0) * 100% + 8px);
+  right: 8px;
+}
+
+/* Toast when someone publishes a sky photo (live_toast.js). */
+.sky-live-toast {
+  position: fixed;
+  left: 50%;
+  top: 16px;
+  transform: translate(-50%, -150%);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
+  padding: 8px 8px 8px 14px;
+  border-radius: 20px;
+  background: rgba(20, 24, 32, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  color: white;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.sky-live-toast--shown {
+  transform: translate(-50%, 0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sky-live-toast-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sky-live-toast-who,
+.sky-live-toast-where {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sky-live-toast-where {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.sky-live-toast-where:empty {
+  display: none;
+}
+
+.sky-live-toast-see {
+  flex: none;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 14px;
+  background: #1e88e5;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sky-live-toast-close {
+  flex: none;
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* People found by the check before publish (blurred on upload). */
+.sky-preview-person-box {
+  position: absolute;
+  border: 2px solid #ff3b30;
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+
+/* Owner avatar (owner_avatar.js): round, top-right corner of each picture. */
+.sky-owner-avatar {
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6), 0 1px 3px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+  cursor: pointer;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.sky-owner-avatar[hidden],
+body.skypics-avatars-off .sky-owner-avatar {
+  display: none !important;
+}
+
+.sky-photo-info.has-avatar {
+  padding-right: 34px;
+}
+
+.sky-owner-avatar--info {
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+}
+
+.sky-scroll-photo-thumb {
+  position: relative;
+}
+
+/* Strip: size and place set in JS (AVATAR_RATIO of the picture); none of
+   the strip photo's img rules (border, selection thickness). */
+.sky-scroll-photo-thumb img.sky-owner-avatar.sky-owner-avatar--strip {
+  border: none;
+  max-width: none;
+  max-height: none;
+  scroll-snap-align: none;
+}
+
+/* Owner's name: hover / click on an avatar. */
+.sky-owner-tag {
+  position: fixed;
+  z-index: 1000;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font: 12px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.sky-owner-tag[hidden] {
+  display: none;
+}
+
+/* True Color: photo moved onto the last EPIC day, dimmer and see-through
+   (true_color.js SHIFTED_*; the preview is unchanged). */
+.sky-scroll-photo-thumb.is-time-shifted {
+  filter: brightness(0.6) opacity(0.5);
+}
+
+/* Split view (photo preview, live camera), horizontal timeline: the date /
+   time down to just above the track (ui.js syncDateToStrip, --sky-date-drop,
+   never below its usual place). */
+body:is(.bt-split-col, .bt-split-row) .epic-timeline--horizontal .timeline-chrome-date-wrap {
+  transform: translateY(var(--sky-date-drop, 0px));
+  position: relative;
+  z-index: 3;
+}
