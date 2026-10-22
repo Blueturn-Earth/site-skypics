@@ -1,0 +1,10 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <!-- Grey folder -->
+  <path d="M2.5 6.5A1.5 1.5 0 0 1 4 5h5l2 2h9a1.5 1.5 0 0 1 1.5 1.5v10A1.5 1.5 0 0 1 20 20H4a1.5 1.5 0 0 1-1.5-1.5v-12Z" fill="#5f6368"/>
+  <!-- Google Drive triangle (green / yellow / blue) -->
+  <g transform="translate(6 8.8) scale(0.5)">
+    <path d="M8 0h8l8 13.9h-8z" fill="#ffba00"/>
+    <path d="M0 13.9 4 20.8l8-13.9-4-6.9z" fill="#0066da"/>
+    <path d="M4 20.8h16l4-6.9H8z" fill="#00ac47"/>
+  </g>
+</svg>
