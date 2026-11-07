@@ -1,0 +1,10 @@
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Globe with scattered dots: every photo of every time (no eyes-and-mouth layout) -->
+  <circle cx="12" cy="12" r="8.5" stroke="white" stroke-width="1.6"/>
+  <circle cx="7.6" cy="11" r="1.4" fill="white"/>
+  <circle cx="11.2" cy="7.2" r="1.4" fill="white"/>
+  <circle cx="15.8" cy="9.6" r="1.4" fill="white"/>
+  <circle cx="12.6" cy="12.6" r="1.4" fill="white"/>
+  <circle cx="9.4" cy="16" r="1.4" fill="white"/>
+  <circle cx="16.4" cy="15.4" r="1.4" fill="white"/>
+</svg>

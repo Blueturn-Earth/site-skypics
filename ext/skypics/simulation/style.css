@@ -1,0 +1,34 @@
+/* Skypics simulation mode. */
+#skyPhotosSimBtn svg {
+  display: block;
+}
+
+#skyPhotosSimBtn:not(.is-on) svg {
+  opacity: 0.55;
+  filter: grayscale(0.6);
+}
+
+.sky-scroll-photo-thumb.is-simulated img {
+  outline: 2px solid rgb(255, 220, 0);
+  outline-offset: -2px;
+}
+
+.sky-sim-click-ring {
+  position: fixed;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border: 3px solid rgb(255, 220, 0);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1000;
+  animation: sky-sim-ring 2.5s ease-out forwards;
+}
+
+.sky-sim-click-ring.is-failed {
+  border-color: rgb(230, 40, 40);
+}
+
+@keyframes sky-sim-ring {
+  to { opacity: 0; transform: scale(1.6); }
+}
